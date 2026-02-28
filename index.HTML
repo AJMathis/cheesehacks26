@@ -1,3 +1,87 @@
-<html>
-    <h1>HEllo</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meal Calorie Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <h1>Meal Calorie Tracker</h1>
+        <p>Enter the foods you ate (e.g., "2 eggs, 1 slice of toast")</p>
+    </header>
+
+    <main>
+        <form id="meal-form">
+            <label for="meal-input">Meal description:</label><br />
+            <input type="text" id="meal-input" placeholder="e.g. 1 banana, 1 cup rice" size="50" required />
+            <button type="submit">Calculate Calories</button>
+        </form>
+
+        <section id="result">
+            <!-- calories result will appear here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Calorie Tracker</p>
+    </footer>
+
+    <script>
+        /*
+         * Simple example calorie lookup. In a real application you'd call a
+         * nutrition database API. Here we use a very basic dictionary for demo.
+         */
+        const caloriesPerItem = {
+            egg: 78,
+            eggs: 78,
+            banana: 105,
+            toast: 75,
+            rice: 206,
+            chicken: 335,
+            beef: 250,
+            salad: 150,
+            apple: 95,
+        };
+
+        function parseMeal(text) {
+            const items = text.toLowerCase().split(/[,]+/).map(s => s.trim());
+            let total = 0;
+            let details = [];
+
+            items.forEach(item => {
+                // try to extract a number and a word
+                const match = item.match(/(\d+\.?\d*)\s*(\w+)/);
+                if (match) {
+                    let qty = parseFloat(match[1]);
+                    let name = match[2];
+                    const cal = caloriesPerItem[name] || 0;
+                    total += cal * qty;
+                    details.push(`${qty} ${name} = ${cal * qty} kcal`);
+                } else {
+                    // fallback: look for known word
+                    Object.keys(caloriesPerItem).forEach(key => {
+                        if (item.includes(key)) {
+                            total += caloriesPerItem[key];
+                            details.push(`${key} = ${caloriesPerItem[key]} kcal`);
+                        }
+                    });
+                }
+            });
+            return { total, details };
+        }
+
+        document.getElementById('meal-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const text = document.getElementById('meal-input').value;
+            const { total, details } = parseMeal(text);
+            const resultEl = document.getElementById('result');
+            resultEl.innerHTML = `<h2>Total Calories: ${total.toFixed(0)}</h2>` +
+                '<ul>' +
+                details.map(d => `<li>${d}</li>`).join('') +
+                '</ul>';
+        });
+    </script>
+</body>
 </html>
