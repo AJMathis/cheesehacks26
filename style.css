@@ -1,4 +1,8 @@
 /* modern, clean layout with Jennie Ruby Red theme */
+* {
+    font-family: Georgia;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
