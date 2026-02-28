@@ -28,21 +28,46 @@ main {
 form {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5em;
+    flex-direction: column;
+    gap: 1em;
 }
 
-input[type="text"] {
+.form-row {
+    display: flex;
+    gap: 0.75em;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.input-group {
+    flex: 1 1 120px;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.25em;
+    color: #666;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+select {
     padding: 0.75em;
     font-size: 1rem;
-    flex: 1 1 300px;
     border: 1px solid #ccc;
     border-radius: 4px;
     transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
     outline: none;
     border-color: #bb0a23;
 }
@@ -56,10 +81,28 @@ button {
     cursor: pointer;
     border-radius: 4px;
     transition: background 0.2s;
+    align-self: center;
 }
 
 button:hover, button:focus {
     background: #8a081b;
+}
+
+select {
+    background: white;
+    cursor: pointer;
+}
+
+#food-list {
+    margin-top: 2em;
+    padding: 1em;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+#food-list h3 {
+    color: #bb0a23;
+    margin-top: 0;
 }
 
 #result h2 {

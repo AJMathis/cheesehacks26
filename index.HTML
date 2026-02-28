@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>Meal Calorie Tracker</h1>
+        <h1>Bucky's Calorie Tracker</h1>
         <p>Enter the foods you ate (e.g., "2 eggs, 1 slice of toast")</p>
     </header>
 
@@ -17,10 +17,39 @@
         <img src="buckydate.png" alt="bucky calorie count" class="meal-image">
 
         <form id="meal-form">
-            <label for="meal-input">Meal description:</label><br />
-            <input type="text" id="meal-input" placeholder="e.g. 1 banana, 1 cup rice" size="50" required />
-            <button type="submit">Calculate Calories</button>
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="quantity">Quantity:</label><br />
+                    <input type="number" id="quantity" placeholder="e.g. 2" step="0.1" required />
+                </div>
+                <div class="input-group">
+                    <label for="measurement">Measurement:</label><br />
+                    <select id="measurement" required>
+                        <option value="">Select unit</option>
+                        <option value="oz">oz</option>
+                        <option value="grams">grams</option>
+                        <option value="cups">cups</option>
+                        <option value="tbsp">tbsp</option>
+                        <option value="tsp">tsp</option>
+                        <option value="ml">ml</option>
+                        <option value="g">g</option>
+                        <option value="kg">kg</option>
+                        <option value="lb">lb</option>
+                        <option value="serving">serving</option>
+                        <option value="piece">piece</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="item">Food:</label><br />
+                    <input type="text" id="item" placeholder="e.g. rice" required />
+                </div>
+            </div>
+            <button type="button" id="add-btn">Add Item</button>
         </form>
+
+        <div id="food-list">
+            <!-- foods added will appear here -->
+        </div>
 
         <section id="result">
             <!-- calories result will appear here -->
@@ -48,42 +77,82 @@
             apple: 95,
         };
 
-        function parseMeal(text) {
-            const items = text.toLowerCase().split(/[,]+/).map(s => s.trim());
-            let total = 0;
-            let details = [];
+        let foodItems = [];
 
-            items.forEach(item => {
-                // try to extract a number and a word
-                const match = item.match(/(\d+\.?\d*)\s*(\w+)/);
-                if (match) {
-                    let qty = parseFloat(match[1]);
-                    let name = match[2];
-                    const cal = caloriesPerItem[name] || 0;
-                    total += cal * qty;
-                    details.push(`${qty} ${name} = ${cal * qty} kcal`);
-                } else {
-                    // fallback: look for known word
-                    Object.keys(caloriesPerItem).forEach(key => {
-                        if (item.includes(key)) {
-                            total += caloriesPerItem[key];
-                            details.push(`${key} = ${caloriesPerItem[key]} kcal`);
-                        }
-                    });
-                }
+        function renderFoodList() {
+            const foodListEl = document.getElementById('food-list');
+            if (foodItems.length === 0) {
+                foodListEl.innerHTML = '';
+                return;
+            }
+
+            let totalCals = 0;
+            let html = '<h3>Foods Added:</h3><ul style="list-style:none;padding:0;">';
+            
+            foodItems.forEach((item, idx) => {
+                totalCals += item.calories;
+                html += `<li style="padding:0.5em;background:#f5f5f5;margin:0.5em 0;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+                    <span>${item.quantity} ${item.measurement} ${item.name} = ${item.calories.toFixed(0)} kcal</span>
+                    <button type="button" onclick="removeFood(${idx})" style="background:#bb0a23;color:#fff;border:none;padding:0.4em 0.8em;border-radius:3px;cursor:pointer;font-size:0.9em;">Remove</button>
+                </li>`;
             });
-            return { total, details };
+            
+            html += '</ul>';
+            html += `<h2 style="color:#bb0a23;margin-top:1em;">Total Calories: ${totalCals.toFixed(0)}</h2>
+                <button type="button" onclick="clearAll()" style="background:#999;color:#fff;border:none;padding:0.6em 1.2em;border-radius:4px;cursor:pointer;font-size:1rem;margin-top:1em;">Clear All</button>`;
+            
+            foodListEl.innerHTML = html;
         }
 
-        document.getElementById('meal-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const text = document.getElementById('meal-input').value;
-            const { total, details } = parseMeal(text);
-            const resultEl = document.getElementById('result');
-            resultEl.innerHTML = `<h2>Total Calories: ${total.toFixed(0)}</h2>` +
-                '<ul>' +
-                details.map(d => `<li>${d}</li>`).join('') +
-                '</ul>';
+        window.removeFood = function(idx) {
+            foodItems.splice(idx, 1);
+            renderFoodList();
+        };
+
+        window.clearAll = function() {
+            foodItems = [];
+            document.getElementById('quantity').value = '';
+            document.getElementById('measurement').value = '';
+            document.getElementById('item').value = '';
+            renderFoodList();
+        };
+
+        document.getElementById('add-btn').addEventListener('click', function () {
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const measurement = document.getElementById('measurement').value.trim();
+            const item = document.getElementById('item').value.trim().toLowerCase();
+
+            if (quantity <= 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+            if (!measurement) {
+                alert('Please select a measurement');
+                return;
+            }
+            if (item === '') {
+                alert('Please enter a food item');
+                return;
+            }
+
+            const cal = caloriesPerItem[item] || 0;
+            const totalCal = cal * quantity;
+
+            foodItems.push({
+                quantity: quantity,
+                measurement: measurement,
+                name: item,
+                calories: totalCal,
+                found: cal > 0
+            });
+
+            // Clear inputs for next entry
+            document.getElementById('quantity').value = '';
+            document.getElementById('measurement').value = '';
+            document.getElementById('item').value = '';
+            document.getElementById('quantity').focus();
+
+            renderFoodList();
         });
     </script>
 </body>
