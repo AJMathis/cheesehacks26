@@ -87,11 +87,11 @@
             }
 
             let totalCals = 0;
-            let html = '<h3>Foods Added:</h3><ul style="list-style:none;padding:0;">';
+            let html = '<h3>Foods Added:</h3><ul style="list-style:none;padding:0;background-color: rgb(18, 18, 18);;">';
             
             foodItems.forEach((item, idx) => {
                 totalCals += item.calories;
-                html += `<li style="padding:0.5em;background:#f5f5f5;margin:0.5em 0;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+                html += `<li style="padding:0.5em;background:rgb(18, 18, 18);;margin:0.5em 0;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
                     <span>${item.quantity} ${item.measurement} ${item.name} = ${item.calories.toFixed(0)} kcal</span>
                     <button type="button" onclick="removeFood(${idx})" style="background:#bb0a23;color:#fff;border:none;padding:0.4em 0.8em;border-radius:3px;cursor:pointer;font-size:0.9em;">Remove</button>
                 </li>`;
@@ -99,7 +99,7 @@
             
             html += '</ul>';
             html += `<h2 style="color:#bb0a23;margin-top:1em;">Total Calories: ${totalCals.toFixed(0)}</h2>
-                <button type="button" onclick="clearAll()" style="background:#999;color:#fff;border:none;padding:0.6em 1.2em;border-radius:4px;cursor:pointer;font-size:1rem;margin-top:1em;">Clear All</button>`;
+                <button type="button" onclick="clearAll()" style="background:#bb0a23;;color:#fff;border:none;padding:0.6em 1.2em;border-radius:4px;cursor:pointer;font-size:1rem;margin-top:1em;">Clear All</button>`;
             
             foodListEl.innerHTML = html;
         }

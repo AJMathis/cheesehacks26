@@ -4,8 +4,8 @@ body {
     margin: 0;
     padding: 0;
     line-height: 1.6;
-    background: #fafafa;
-    color: #333;
+    background: rgb(18, 18, 18);
+    color: #fafafa;
 }
 
 header, footer {
@@ -20,7 +20,7 @@ main {
     padding: 3em 1em;
     max-width: 600px;
     margin: 1.5em auto 2em; /* added top space below header */
-    background: #fff;
+    background: rgb(18, 18, 18);
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
@@ -49,7 +49,7 @@ form {
 .input-group label {
     font-size: 0.9rem;
     margin-bottom: 0.25em;
-    color: #666;
+    color: rgb(18, 18, 18);
     font-weight: 500;
 }
 
@@ -63,6 +63,8 @@ select {
     transition: border-color 0.2s;
     width: 100%;
     box-sizing: border-box;
+    background-color: rgb(18,18,18);
+    color: white;
 }
 
 input[type="text"]:focus,
@@ -81,23 +83,33 @@ button {
     cursor: pointer;
     border-radius: 4px;
     transition: background 0.2s;
+    transition: scale 0.15s;
     align-self: center;
 }
 
 button:hover, button:focus {
     background: #8a081b;
+    scale: 105%;
 }
 
 select {
-    background: white;
-    cursor: pointer;
+    background: rgb(18, 18, 18);;
+    color: white;
+}
+
+option {
+    color: #666;
 }
 
 #food-list {
     margin-top: 2em;
     padding: 1em;
-    background: #f9f9f9;
+    background: rgb(18, 18, 18);
     border-radius: 6px;
+}
+
+#result {
+    background: rgb(18, 18, 18);
 }
 
 #food-list h3 {
