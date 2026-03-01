@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meal Calorie Tracker</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="script.js"></script>
 </head>
 <body>
     <header>
@@ -66,18 +65,6 @@
          * Simple example calorie lookup. In a real application you'd call a
          * nutrition database API. Here we use a very basic dictionary for demo.
          */
-        const caloriesPerItem = {
-            egg: 78,
-            eggs: 78,
-            banana: 105,
-            toast: 75,
-            rice: 206,
-            chicken: 335,
-            beef: 250,
-            salad: 150,
-            apple: 95,
-        };
-
         let foodItems = [];
 
         function renderFoodList() {
@@ -117,8 +104,21 @@
             document.getElementById('item').value = '';
             renderFoodList();
         };
+        
+        async function estimateCaloriesAI({ food, amount, unit }) {
+            const res = await fetch("http://localhost:3000/api/calories", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ food, amount, unit })
+            });
 
-        document.getElementById('add-btn').addEventListener('click', function () {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || "Backend error");
+
+            return data; // { calories, confidence, notes }
+        }
+
+        document.getElementById('add-btn').addEventListener('click', async function () {
             const quantity = parseFloat(document.getElementById('quantity').value) || 0;
             const measurement = document.getElementById('measurement').value.trim();
             const item = document.getElementById('item').value.trim().toLowerCase();
@@ -136,16 +136,26 @@
                 return;
             }
 
-            const cal = caloriesPerItem[item] || 0;
-            const totalCal = cal * quantity;
+            const btn = document.getElementById('add-btn');
+                btn.disabled = true;
+                btn.textContent = "Estimating...";
 
-            foodItems.push({
-                quantity: quantity,
-                measurement: measurement,
-                name: item,
-                calories: totalCal,
-                found: cal > 0
-            });
+                try {
+                // IMPORTANT: backend expects: food, amount, unit
+                const ai = await estimateCaloriesAI({
+                    food: item,
+                    amount: quantity,
+                    unit: measurement
+                });
+
+                foodItems.push({
+                    quantity,
+                    measurement,
+                    name: item,
+                    calories: ai.calories,
+                    confidence: ai.confidence,
+                    notes: ai.notes
+                });
 
             // Clear inputs for next entry
             document.getElementById('quantity').value = '';
@@ -154,7 +164,17 @@
             document.getElementById('quantity').focus();
 
             renderFoodList();
-        });
+                } catch (e) {
+                //alert("Could not estimate. Make sure your backend is running on port 3000.");
+                //console.error(e);
+
+                alert("Could not estimate: " + (e?.message || e));
+                console.error(e);
+                } finally {
+                btn.disabled = false;
+                btn.textContent = "Add Item";
+                }
+            });
     </script>
 </body>
 </html>
